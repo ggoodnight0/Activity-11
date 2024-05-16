@@ -16,7 +16,10 @@ mongoose.connect(dbUrl, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error(err));
 
-// Middleware and routes here
+// Route definition
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
