@@ -29,5 +29,51 @@ app.get('/notes', (req, res) => {
       <ul id="noteList">
         <li>Note 1</li>
         <li>Note 2</li>
-        <li
+        <li>Note 3</li>
+      </ul>
+    </div>
+    <div>
+      <input type="text" id="noteTitle" placeholder="Enter note title">
+      <textarea id="noteText" placeholder="Enter note text"></textarea>
+      <button id="saveNote">Save Note</button>
+      <button id="clearForm">Clear Form</button>
+    </div>
+    <script>
+      document.getElementById('saveNote').addEventListener('click', function() {
+        const title = document.getElementById('noteTitle').value;
+        const text = document.getElementById('noteText').value;
+        fetch('/notes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ title, text })
+        })
+        .then(response => response.text())
+        .then(data => {
+          alert(data);
+          document.getElementById('noteList').innerHTML += '<li>' + title + '</li>';
+          document.getElementById('noteTitle').value = '';
+          document.getElementById('noteText').value = '';
+        });
+      });
 
+      document.getElementById('clearForm').addEventListener('click', function() {
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteText').value = '';
+      });
+    </script>
+  `);
+});
+
+// Save note route
+app.post('/notes', (req, res) => {
+  // Save the note to the database
+  const { title, text } = req.body;
+  // Code to save the note goes here
+  res.send('Note saved successfully!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
