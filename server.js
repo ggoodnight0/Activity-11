@@ -16,6 +16,17 @@ mongoose.connect(dbUrl, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error(err));
 
+// Route to get all notes
+app.get('/notes', async (req, res) => {
+  try {
+    const notes = await Note.find();
+    res.json(notes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 // Landing page route
 app.get('/', (req, res) => {
   res.send('<h1>Welcome to the Note Taker</h1><a href="/notes">Go to Notes Page</a>');
