@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const Note = require('./models/Note'); // Assuming you have a Note model defined
 const app = express();
 const PORT = process.env.PORT || 3000;
 
