@@ -6,8 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const dbUrl = process.env.DATABASE_URL;
-const secretKey = process.env.SECRET_KEY;
-const apiKey = process.env.API_KEY;
 
 // MongoDB connection
 mongoose.connect(dbUrl, {
@@ -16,6 +14,9 @@ mongoose.connect(dbUrl, {
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error(err));
+
+// Middleware to parse JSON bodies
+app.use(express.json());
 
 // Route to get all notes
 app.get('/notes', async (req, res) => {
@@ -34,14 +35,12 @@ app.get('/', (req, res) => {
 });
 
 // Notes page route
-app.get('/notes', (req, res) => {
+app.get('/notes-page', (req, res) => {
   res.send(`
     <h1>Notes</h1>
     <div>
       <ul id="noteList">
-        <li>Note 1</li>
-        <li>Note 2</li>
-        <li>Note 3</li>
+        <!-- Existing notes will be dynamically added here -->
       </ul>
     </div>
     <div>
@@ -51,40 +50,28 @@ app.get('/notes', (req, res) => {
       <button id="clearForm">Clear Form</button>
     </div>
     <script>
-      document.getElementById('saveNote').addEventListener('click', function() {
-        const title = document.getElementById('noteTitle').value;
-        const text = document.getElementById('noteText').value;
-        fetch('/notes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ title, text })
-        })
-        .then(response => response.text())
-        .then(data => {
-          alert(data);
-          document.getElementById('noteList').innerHTML += '<li>' + title + '</li>';
-          document.getElementById('noteTitle').value = '';
-          document.getElementById('noteText').value = '';
-        });
-      });
-
-      document.getElementById('clearForm').addEventListener('click', function() {
-        document.getElementById('noteTitle').value = '';
-        document.getElementById('noteText').value = '';
-      });
+      // Your client-side JavaScript code here
     </script>
   `);
 });
 
 // Save note route
-app.post('/notes', (req, res) => {
-  // Save the note to the database
-  const { title, text } = req.body;
-  // Code to save the note goes here
-  res.send('Note saved successfully!');
+app.post('/notes', async (req, res) => {
+  try {
+    const { title, text } = req.body;
+    const newNote = new Note({ title, text });
+    await newNote.save();
+    res.send('Note saved successfully!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
 });
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
